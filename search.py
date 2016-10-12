@@ -195,18 +195,37 @@ def graph_search(problem, frontier):
     If two paths reach a state, only use the first one. [Figure 3.7]"""
     # for i in range(0,len(problem.graph)):
 
+    l = []
     frontier.append(Node(problem.initial))
-    explored = set()
+    explor = set()
     while frontier:
         node = frontier.pop()
-        print(node)
+        l.append(node)
+        node.expand(problem)
+        explor.add(node.state)
+        frontier.extend(child for child in node.expand(problem)
+                        if child.state not in explor and
+                        child not in frontier)
+    l.sort()
+    print(l)
+    explored = set()
+    i =0
+    while (frontier):
+        frontier.pop()
+
+    frontier.append(Node(problem.initial))
+    while frontier:
+        node = l.pop()
+        # print(node)
         if problem.goal_test(node.state):
             return node
         explored.add(node.state)
         frontier.extend(child for child in node.expand(problem)
-                        if child.state not in explored and
-                        child not in frontier)
+                            if child.state not in explored and
+                            child not in frontier)
+
     return None
+
 
 
 def breadth_first_tree_search(problem):
@@ -714,7 +733,7 @@ def RandomGraph(nodes=list(range(10)), min_links=2, width=400, height=300,
 Simplified road map of Romania
 """
 
-n = dict(
+romania_map  =UndirectedGraph( dict(
     Arad=dict(Zerind=75, Sibiu=140, Timisoara=118),
     Bucharest=dict(Urziceni=85, Pitesti=101, Giurgiu=90, Fagaras=211),
     Craiova=dict(Drobeta=120, Rimnicu=146, Pitesti=138),
@@ -727,16 +746,7 @@ n = dict(
     Oradea=dict(Zerind=71, Sibiu=151),
     Pitesti=dict(Rimnicu=97),
     Rimnicu=dict(Sibiu=80),
-    Urziceni=dict(Vaslui=142))
-
-n = collections.OrderedDict(n)
-romania_map = UndirectedGraph(n)
-
-def sortGrapth(graph):
-    for i in range(0,len(romania_map)):
-        print(i)
-
-sortGrapth(romania_map)
+    Urziceni=dict(Vaslui=142)))
 
 
 romania_map.locations = dict(
