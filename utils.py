@@ -305,7 +305,7 @@ def isnumber(x):
 
 def issequence(x):
     "Is x a sequence?"
-    return isinstance(x, collections.abc.Sequence)
+    return isinstance(x, _collections_abc.Sequence)
 
 
 def print_table(table, header=None, sep='   ', numfmt='%g'):
@@ -342,7 +342,7 @@ def AIMAFile(components, mode='r'):
 
 def DataFile(name, mode='r'):
     "Return a file in the AIMA /aima-data directory."
-    return AIMAFile(['aima-data', name], mode)
+    return AIMAFile(['data', name], mode)
 
 
 # ______________________________________________________________________________

@@ -12,9 +12,6 @@ from utils import (
 from grid import distance
 from _collections import defaultdict
 
-import collections
-
-import operator
 import math
 import random
 import sys
@@ -106,8 +103,9 @@ class Node:
 
     def expand(self, problem):
         "List the nodes reachable in one step from this node."
+       
         return [self.child_node(problem, action)
-                for action in problem.actions(self.state)]
+                for action in sorted(problem.actions(self.state))]
 
     def child_node(self, problem, action):
         "[Figure 3.10]"
@@ -193,39 +191,18 @@ def graph_search(problem, frontier):
     """Search through the successors of a problem to find a goal.
     The argument frontier should be an empty queue.
     If two paths reach a state, only use the first one. [Figure 3.7]"""
-    # for i in range(0,len(problem.graph)):
-
-    l = []
     frontier.append(Node(problem.initial))
-    explor = set()
+    explored = set()
     while frontier:
         node = frontier.pop()
-        l.append(node)
-        node.expand(problem)
-        explor.add(node.state)
-        frontier.extend(child for child in node.expand(problem)
-                        if child.state not in explor and
-                        child not in frontier)
-    l.sort()
-    print(l)
-    explored = set()
-    i =0
-    while (frontier):
-        frontier.pop()
-
-    frontier.append(Node(problem.initial))
-    while frontier:
-        node = l.pop()
-        # print(node)
+        #print(node.state)
         if problem.goal_test(node.state):
             return node
         explored.add(node.state)
         frontier.extend(child for child in node.expand(problem)
-                            if child.state not in explored and
-                            child not in frontier)
-
+                        if child.state not in explored and
+                        child not in frontier)
     return None
-
 
 
 def breadth_first_tree_search(problem):
@@ -594,24 +571,16 @@ class LRTAStarAgent:
 # Genetic Algorithm
 
 
-def genetic_search(problem, fitness_fn, ngen=1000, pmut=0.1, n=20):
-    """
-    Call genetic_algorithm on the appropriate parts of a problem.
-    This requires the problem to have states that can mate and mutate,
-    plus a value method that scores states."""
-    s = problem.initial_state
-    states = [problem.result(s, a) for a in problem.actions(s)]
-    random.shuffle(states)
-    return genetic_algorithm(states[:n], problem.value, ngen, pmut)
 
 
 def genetic_algorithm(population, fitness_fn, ngen=1000, pmut=0.1):
     "[Figure 4.8]"
     for i in range(ngen):
         new_population = []
-        for i in len(population):
+        for i in range(len(population)):
             fitnesses = map(fitness_fn, population)
             p1, p2 = weighted_sample_with_replacement(population, fitnesses, 2)
+            
             child = p1.mate(p2)
             if random.uniform(0, 1) < pmut:
                 child.mutate()
@@ -732,8 +701,7 @@ def RandomGraph(nodes=list(range(10)), min_links=2, width=400, height=300,
 """ [Figure 3.2]
 Simplified road map of Romania
 """
-
-romania_map  =UndirectedGraph( dict(
+romania_map = UndirectedGraph(dict(
     Arad=dict(Zerind=75, Sibiu=140, Timisoara=118),
     Bucharest=dict(Urziceni=85, Pitesti=101, Giurgiu=90, Fagaras=211),
     Craiova=dict(Drobeta=120, Rimnicu=146, Pitesti=138),
@@ -747,8 +715,6 @@ romania_map  =UndirectedGraph( dict(
     Pitesti=dict(Rimnicu=97),
     Rimnicu=dict(Sibiu=80),
     Urziceni=dict(Vaslui=142)))
-
-
 romania_map.locations = dict(
     Arad=(91, 492), Bucharest=(400, 327), Craiova=(253, 288),
     Drobeta=(165, 299), Eforie=(562, 293), Fagaras=(305, 449),
@@ -757,7 +723,6 @@ romania_map.locations = dict(
     Oradea=(131, 571), Pitesti=(320, 368), Rimnicu=(233, 410),
     Sibiu=(207, 457), Timisoara=(94, 410), Urziceni=(456, 350),
     Vaslui=(509, 444), Zerind=(108, 531))
-
 
 """ [Figure 4.9]
 Eight possible states of the vacumm world
@@ -875,7 +840,7 @@ class NQueensProblem(Problem):
 
     def __init__(self, N):
         self.N = N
-        self.initial = [None] * N
+        self.initial= [None] * N
 
     def actions(self, state):
         "In the leftmost empty column, try all non-conflicting rows."
